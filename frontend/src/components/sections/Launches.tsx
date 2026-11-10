@@ -25,6 +25,9 @@ type Launch = {
   url?: string;
 };
 
+const FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1517976487492-5750f3195933?w=900&q=85";
+
 function getCountdown(date: string, now: number) {
   const difference = new Date(date).getTime() - now;
 
@@ -37,6 +40,67 @@ function getCountdown(date: string, now: number) {
   const seconds = Math.floor((difference % 60000) / 1000);
 
   return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+}
+
+function LaunchImage({
+  src,
+  alt,
+}: {
+  src?: string | null;
+  alt: string;
+}) {
+  const [imageSrc, setImageSrc] = useState(src || FALLBACK_IMAGE);
+  const [fallbackFailed, setFallbackFailed] = useState(false);
+
+  useEffect(() => {
+    setImageSrc(src || FALLBACK_IMAGE);
+    setFallbackFailed(false);
+  }, [src]);
+
+  return (
+    <div
+      style={{
+        width: "100%",
+        height: "190px",
+        overflow: "hidden",
+        background: "#101d35",
+      }}
+    >
+      {!fallbackFailed ? (
+        <img
+          src={imageSrc}
+          alt={alt}
+          loading="lazy"
+          onError={() => {
+            if (imageSrc !== FALLBACK_IMAGE) {
+              setImageSrc(FALLBACK_IMAGE);
+            } else {
+              setFallbackFailed(true);
+            }
+          }}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block",
+          }}
+        />
+      ) : (
+        <div
+          style={{
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#00E5FF",
+            fontSize: "48px",
+          }}
+        >
+          🚀
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function Launches() {
@@ -54,10 +118,10 @@ export default function Launches() {
     let active = true;
 
     async function loadLaunches() {
-      setLoading(true);
-      setError("");
-
       try {
+        setLoading(true);
+        setError("");
+
         const response = await fetch(
           "https://ll.thespacedevs.com/2.3.0/launches/upcoming/?limit=6&mode=normal&format=json"
         );
@@ -80,7 +144,7 @@ export default function Launches() {
           setError(
             err instanceof Error
               ? err.message
-              : "Live launch data unavailable. Please try again."
+              : "Live launch data unavailable."
           );
         }
       } finally {
@@ -121,9 +185,9 @@ export default function Launches() {
       {loading && <p>Loading real launch data...</p>}
 
       {error && (
-        <div role="alert" style={{ color: "#ffb8a5", margin: "18px 0" }}>
+        <p role="alert" style={{ color: "#ffb8a5", margin: "18px 0" }}>
           {error}
-        </div>
+        </p>
       )}
 
       {!loading && !error && launches.length === 0 && (
@@ -147,50 +211,12 @@ export default function Launches() {
               background: "#0D1224",
             }}
           >
-            
-<div
-  style={{
-    width: "100%",
-    height: "180px",
-    background: "#111d32",
-    overflow: "hidden",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  }}
->
-  {launch.image ? (
-    <img
-      
-      src={launch.image}
-      alt={launch.name}
-      loading="lazy"
-     onError={(event) => {
-  const container = event.currentTarget.parentElement;
-  event.currentTarget.style.display = "none";
-
-  if (container) {
-    container.innerHTML =
-      '<div style="color:#aab7d0;text-align:center;padding:20px">🚀 Image not available</div>';
-  }
-}}
-      style={{
-        width: "100%",
-        height: "180px",
-        objectFit: "cover",
-        display: "block",
-      }}
-    />
-  ) : (
-    <span style={{ color: "#8191ad", fontSize: "14px" }}>
-      🚀 Image not available
-    </span>
-  )}
-</div>
+            <LaunchImage src={launch.image} alt={launch.name} />
 
             <div style={{ padding: "20px" }}>
               <p style={{ color: "#00E5FF", fontSize: "12px" }}>
-                {launch.launch_service_provider?.name ?? "Launch provider unavailable"}
+                {launch.launch_service_provider?.name ??
+                  "Launch provider unavailable"}
               </p>
 
               <h3 style={{ fontSize: "20px", margin: "12px 0" }}>
@@ -230,7 +256,11 @@ export default function Launches() {
               <p style={{ color: "#aab7d0", marginBottom: "10px" }}>
                 Launch site:{" "}
                 {launch.pad?.name
-                  ? `${launch.pad.name}${launch.pad.location?.name ? `, ${launch.pad.location.name}` : ""}`
+                  ? `${launch.pad.name}${
+                      launch.pad.location?.name
+                        ? `, ${launch.pad.location.name}`
+                        : ""
+                    }`
                   : launch.pad?.location?.name ?? "Not announced"}
               </p>
 
