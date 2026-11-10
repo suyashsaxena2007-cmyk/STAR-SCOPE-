@@ -20,8 +20,8 @@ export default function Apod() {
     async function loadApod() {
       try {
         const response = await fetch(
-          "UjTlq3ob75RcPowYViaxwiASRj4wCLBuiOvanOJI"
-        );
+  "http://127.0.0.1:8010/api/nasa/apod"
+);
 
         if (!response.ok) {
           throw new Error("NASA data abhi load nahi ho raha.");
@@ -80,7 +80,7 @@ export default function Apod() {
           {data.media_type === "image" ? (
             <a href={data.hdurl || data.url} target="_blank" rel="noreferrer">
               <img
-                src={data.url}
+             src={data.hdurl || data.url}
                 alt={data.title}
                 style={{
                   width: "100%",

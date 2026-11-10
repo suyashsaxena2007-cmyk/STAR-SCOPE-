@@ -24,67 +24,12 @@ import SpaceQuizArena from "./components/sections/SpaceQuizArena";
 import MissionControlCenter from "./components/sections/MissionControlCenter";
 import BusinessModel from "./components/sections/BusinessModel";
 import SpaceAI from "./components/sections/SpaceAI";
-import SolarScene from "./components/solar/SolarScene";
-
-const planets = [
-  {
-    name: "Mercury",
-    color: "#a8a8a8",
-    size: "Smallest planet",
-    distance: "57.9M km",
-  },
-  {
-    name: "Venus",
-    color: "#e6b878",
-    size: "Hottest planet",
-    distance: "108.2M km",
-  },
-  {
-    name: "Earth",
-    color: "#35a7ff",
-    size: "Our home",
-    distance: "149.6M km",
-  },
-  {
-    name: "Mars",
-    color: "#f47757",
-    size: "The red planet",
-    distance: "227.9M km",
-  },
-  {
-    name: "Jupiter",
-    color: "#d9ad88",
-    size: "Largest planet",
-    distance: "778.6M km",
-  },
-  {
-    name: "Saturn",
-    color: "#e6d19a",
-    size: "The ringed planet",
-    distance: "1.43B km",
-  },
-  {
-    name: "Uranus",
-    color: "#80e0e8",
-    size: "Ice giant",
-    distance: "2.87B km",
-  },
-  {
-    name: "Neptune",
-    color: "#567cff",
-    size: "The distant giant",
-    distance: "4.50B km",
-  },
-];
 
 function App() {
-  const [selectedPlanet, setSelectedPlanet] = useState(2);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
-
-  const planet = planets[selectedPlanet];
 
   // Dedicated module routes
   const modulePages: Record<
@@ -104,7 +49,7 @@ function App() {
       component: <NearEarthAsteroidsRadar />,
     },
     "/solar-system": {
-      title: "Solar System",
+      title: "Explore Our Solar System",
       component: <InteractiveSolarSystem />,
     },
     "/mars-rover": {
@@ -119,9 +64,6 @@ function App() {
       title: "Space Quiz Arena",
       component: <SpaceQuizArena />,
     },
-
-    // Astronomy Explorer card opens this dedicated route.
-    // For now, it uses the existing ExoplanetExplorer component.
     "/astronomy-explorer": {
       title: "Astronomy Explorer",
       component: <ExoplanetExplorer />,
@@ -130,7 +72,7 @@ function App() {
 
   const currentModule = modulePages[location.pathname];
 
-  // Render dedicated module pages
+  // Dedicated module page layout
   if (currentModule) {
     return (
       <div
@@ -250,7 +192,12 @@ function App() {
         <nav
           className={menuOpen ? "nav-links nav-open" : "nav-links"}
         >
-          <button onClick={() => scrollTo("solar")}>
+          <button
+            onClick={() => {
+              setMenuOpen(false);
+              navigate("/solar-system");
+            }}
+          >
             Solar System
           </button>
 
@@ -300,7 +247,7 @@ function App() {
             <div className="hero-actions">
               <button
                 className="button-primary"
-                onClick={() => scrollTo("solar")}
+                onClick={() => navigate("/solar-system")}
               >
                 Explore the Universe <ArrowUpRight size={17} />
               </button>
@@ -315,17 +262,6 @@ function App() {
 
             <div className="hero-note">
               <Radio size={14} /> A new perspective on our universe.
-            </div>
-          </div>
-
-          <div
-            className="solar-art"
-            aria-label="Interactive 3D solar system"
-          >
-            <SolarScene />
-
-            <div className="hero-coordinates">
-              SOL SYSTEM <span>·</span> MILKY WAY
             </div>
           </div>
 
@@ -364,119 +300,8 @@ function App() {
           <Apod />
         </div>
 
-        {/* 4. MEET OUR SOLAR SYSTEM */}
-        <section className="section solar-section" id="solar">
-          <div className="section-heading">
-            <div>
-              <div className="eyebrow">01 / OUR NEIGHBOURHOOD</div>
-
-              <h2>
-                Meet our <span>solar system.</span>
-              </h2>
-            </div>
-
-            <p>
-              Eight planets. Countless mysteries.
-              <br />
-              One extraordinary cosmic home.
-            </p>
-          </div>
-
-          <div className="planet-layout">
-            <div className="planet-list">
-              {planets.map((item, index) => (
-                <button
-                  className={
-                    selectedPlanet === index
-                      ? "planet-option active"
-                      : "planet-option"
-                  }
-                  key={item.name}
-                  onClick={() => setSelectedPlanet(index)}
-                >
-                  <span
-                    className="planet-dot"
-                    style={{ background: item.color }}
-                  />
-
-                  <span>{item.name}</span>
-                  <span className="planet-index">0{index + 1}</span>
-                </button>
-              ))}
-            </div>
-
-            <div className="planet-details">
-              <div className="detail-topline">
-                <span>CELESTIAL INSPECTOR</span>
-                <span>PLANET 0{selectedPlanet + 1} / 08</span>
-              </div>
-
-              <div className="planet-display">
-                <div
-                  className="selected-planet-glow"
-                  style={{ background: planet.color }}
-                />
-
-                <div
-                  className={`selected-planet selected-planet-${planet.name.toLowerCase()}`}
-                  style={{
-                    background: `radial-gradient(circle at 30% 25%, #ffffff99, ${planet.color} 35%, #080b18 110%)`,
-                  }}
-                >
-                  {planet.name === "Saturn" && (
-                    <div className="selected-saturn-ring" />
-                  )}
-                </div>
-              </div>
-
-              <div className="detail-content">
-                <div>
-                  <div className="eyebrow">PLANETARY PROFILE</div>
-                  <h3>{planet.name}</h3>
-                  <p>{planet.size}</p>
-                </div>
-
-                <div className="detail-distance">
-                  <span>MEAN DISTANCE FROM SUN</span>
-                  <strong>{planet.distance}</strong>
-                </div>
-              </div>
-
-              <div className="planet-pagination">
-                {planets.map((item, index) => (
-                  <button
-                    key={item.name}
-                    aria-label={`Select ${item.name}`}
-                    className={
-                      selectedPlanet === index
-                        ? "pagination-dot active"
-                        : "pagination-dot"
-                    }
-                    onClick={() => setSelectedPlanet(index)}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <p className="data-note">
-            Planet distances are approximate average distances from the Sun.
-          </p>
-
-          <div style={{ textAlign: "center", marginTop: "28px" }}>
-            <button
-              className="button-primary"
-              onClick={() => navigate("/solar-system")}
-            >
-              Explore Interactive Solar System <ArrowUpRight size={16} />
-            </button>
-          </div>
-        </section>
-
-        {/* 5. BUSINESS MODEL */}
+        {/* 4. BUSINESS MODEL */}
         <BusinessModel />
-
-        {/* EXOPLANET EXPLORER REMOVED FROM HOME PAGE */}
 
         {/* CLOSING SECTION */}
         <section className="closing-cta">
