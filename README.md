@@ -146,6 +146,9 @@ __pycache__/
 venv/
 env/
 
+......
+..vita
+
 # Node
 node_modules/
 dist/
